@@ -1,8 +1,8 @@
 # DevOps on Ubuntu 16.04 LTS
 
-Please visit http://devops.oceansoft.io/2.Managed-Cloud-Services-for-DevOps/DevOps-on-Ubuntu-1604/ for more detail.
+Please visit [Managed-Cloud-Services-for-DevOps](http://devops.oceansoft.io/2.Managed-Cloud-Services-for-DevOps/DevOps-on-Ubuntu-1604/) for more detail.
 
-## 1. Prerequisites
+## 🚀 1. Prerequisites
     
 - [x] [1.1. AWS Free Tier](1.Prerequisites/1.1.AWS.FreeTrial/)
 - [x] [1.2. GCP Free Tier](1.Prerequisites/1.2.GCP.FreeTrial/)
@@ -14,7 +14,7 @@ Please visit http://devops.oceansoft.io/2.Managed-Cloud-Services-for-DevOps/DevO
     ./1.os-upgrade.sh 
   ```
 
-## 2. Installing scripts
+## ⚡️ 2. Installing scripts
 
 | # | Function Name               | Description                                                                                 |
 | - |:--------------------------- | :------------------------------------------------------------------------------------------ |
