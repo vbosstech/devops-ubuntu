@@ -147,7 +147,6 @@ if [ "$installnginx" = "y" ]; then
   
   # Enable Nginx to auto start when Ubuntu is booted
   sudo systemctl enable nginx
-  
   ## Reload config file
   sudo systemctl restart nginx
   

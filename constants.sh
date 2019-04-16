@@ -10,9 +10,13 @@ export LOCALESUPPORT=en_US.UTF-8
 export LC_ALL="C"
 
 export BASE_INSTALL=/home/ubuntu/devops-ubuntu
-export TMP_INSTALL=/tmp/devops-install
+export TMP_INSTALL=/tmp/devops-ubuntu
 export NGINX_CONF=$BASE_INSTALL/_ubuntu/etc/nginx
 export GLOBAL_PROTOCOL=https
+
+export COMPOSERURL=https://getcomposer.org/installer
+# export PHP_VERSION=7.0
+export PHP_VERSION=7.1
 
 # export NVMURL=https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh
 # export NODEJSURL=https://deb.nodesource.com/setup_8.x
