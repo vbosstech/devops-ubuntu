@@ -209,26 +209,6 @@ fi
 
 
 ##############################
-## Verify the installation
-##############################
-
-lsb_release -a               
-timedatectl                  
-free -h                      
-# sudo swapon --show
-
-sudo service nginx status         
-sudo ufw status numbered    
-
-# pip --version
-# python --version     
-# java -version                
-# sudo systemctl status jenkins 
-
-sudo docker volume ls
-# sudo docker volume prune
-
-##############################
 # Remote login
 ##############################
 # read -e -p "Do you want to ssh to server remotely by providing username and password${ques} [y/n] " -i "$DEFAULTYESNO" sshremote
@@ -238,6 +218,7 @@ sudo docker volume ls
 # 	sudo usermod --password $(echo PASSWORD | openssl passwd -1 -stdin) $USER
 # 	echogreen "User can ssh to server by using this command : ssh -o PreferredAuthentications=password user@ip"
 # fi
+
 
 ##
 # Certbot SSL
@@ -324,3 +305,38 @@ add_header X-Content-Type-Options nosniff;
 else
   echo "Skipping install of Certbot"
 fi
+
+##############################
+## Verify the installation
+##############################
+
+lsb_release -a               
+timedatectl                  
+free -h                      
+# sudo swapon --show
+
+sudo service nginx status         
+sudo ufw status numbered    
+
+# pip --version
+# python --version     
+# java -version                
+# sudo systemctl status jenkins 
+
+sudo docker volume ls
+# sudo docker volume prune
+
+sudo nginx -t
+
+# sudo certbot renew
+sudo certbot renew --dry-run
+
+if [ ! -f "/etc/cron.daily/renewcerts" ]; then
+sudo echo "
+#!/bin/bash
+certbot renew
+service nginx reload
+" | sudo tee /etc/cron.daily/renewcerts
+fi
+
+sudo chmod a+x /etc/cron.daily/renewcerts
