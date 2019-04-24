@@ -1,0 +1,3 @@
+| # | Domain                               | Port | Description                                                           |
+|----|-------------------------------------|------|-----------------------------------------------------------------------|
+| 1 | marketing.oceansoft.io               | 80   | Digital Marketing Automation - LEMP Stack                             |

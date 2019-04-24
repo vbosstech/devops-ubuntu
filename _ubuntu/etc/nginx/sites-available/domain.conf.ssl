@@ -1,0 +1,73 @@
+
+server {
+  # listen 80 default_server;
+  # listen [::]:80 default_server ipv6only=on;
+  listen 80;
+  listen [::]:80;
+  server_name @@DNS_DOMAIN@@;
+
+  location / {
+    return 301 https://$host$request_uri;
+  }
+}
+
+# Expires map
+map $sent_http_content_type $expires {
+    default                    off;
+    text/html                  epoch;
+    text/css                   30d;
+    application/javascript     365d;
+    ~image/                    max;
+}
+
+server {
+  server_name @@DNS_DOMAIN@@;
+  # listen 443 ssl http2 default_server;
+  # listen [::]:443 ssl http2 default_server ipv6only=on;
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+
+  expires $expires;
+  
+  ##REWRITE##
+  
+  ##WEB_ROOT##
+  ##INDEX##
+
+  ssl_certificate /etc/letsencrypt/live/@@DNS_DOMAIN@@/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/@@DNS_DOMAIN@@/privkey.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/@@DNS_DOMAIN@@/cert.pem;
+  include /etc/nginx/snippets/ssl.conf;
+
+  underscores_in_headers on;
+
+  # redirect server error pages to the static page /50x.html
+  #
+  # error_page   500 502 503 504  /50x.html;
+  #   location = /50x.html {
+  #     root   @@WEB_ROOT@@;
+  # }
+
+#  location ~* \.(png|jpg|jpeg|gif)$ {
+#      expires 365d;
+#      add_header Cache-Control "public, no-transform";
+#  }
+#
+#  location ~* \.(js|css|pdf|html|swf)$ {
+#      expires 30d;
+#      add_header Cache-Control "public, no-transform";
+#  }
+
+	##COMMON##
+  
+	##ALFRESCO##
+	
+	##CAMUNDA##
+	
+	##EFORM##
+	
+	##MARKETING##
+	
+	##CASHFLOW##
+
+}

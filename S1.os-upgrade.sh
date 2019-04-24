@@ -128,8 +128,7 @@ fi
 ##
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Nginx can be used as frontend to Tomcat."
-echo "This installation will add config default proxying to tomcat running behind."
+echo "Nginx can be used as reverse proxy."
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 read -e -p "Install nginx${ques} [y/n] " -i "$DEFAULTYESNO" installnginx
 if [ "$installnginx" = "y" ]; then
@@ -164,7 +163,7 @@ fi
 
 
 #############################
-Docker & Docker-Compose
+# Docker & Docker-Compose
 #############################
 if [ "`which docker`" = "" ]; then
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -174,6 +173,8 @@ if [ "`which docker`" = "" ]; then
   sh get-docker.sh
   sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   sudo chmod u+x /usr/local/bin/docker-compose
+  sudo groupadd docker
+  sudo usermod -aG docker $USER
 fi
 
 ### Yarn
@@ -199,12 +200,12 @@ fi
 #   # sudo pip install awscli --upgrade --user
 # fi
 
-# if [ "`which aws`" = "" ]; then
-# 	echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-# 	echo "You need to install awscli."
-# 	echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-# 	sudo apt-get $APTVERBOSITY install awscli;
-# fi
+if [ "`which aws`" = "" ]; then
+	echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+	echo "You need to install awscli."
+	echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+	sudo apt-get $APTVERBOSITY install awscli;
+fi
 
 
 ##############################
@@ -216,7 +217,7 @@ timedatectl
 free -h                      
 # sudo swapon --show
 
-service nginx status         
+sudo service nginx status         
 sudo ufw status numbered    
 
 # pip --version
@@ -237,3 +238,89 @@ sudo docker volume ls
 # 	sudo usermod --password $(echo PASSWORD | openssl passwd -1 -stdin) $USER
 # 	echogreen "User can ssh to server by using this command : ssh -o PreferredAuthentications=password user@ip"
 # fi
+
+##
+# Certbot SSL
+##
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Certbot SSL"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Install certbot${ques} [y/n] " -i "$DEFAULTYESNO" installcertbot
+if [ "$installcertbot" = "y" ]; then
+
+  # Insert config for letsencrypt
+  if [ ! -d "/opt/letsencrypt/.well-known" ]; then
+  sudo mkdir -p /opt/letsencrypt/.well-known
+  echo "Hello Letsencrypt!" | sudo tee /opt/letsencrypt/index.html
+  fi
+  
+  sudo chown -R www-data:root /opt/letsencrypt
+  
+  if [ -f "/etc/nginx/sites-available/default" ]; then
+      # Check if eform config does exist
+    well_known=$(grep -o "well-known" /etc/nginx/sites-available/default | wc -l)
+    
+    if [ $well_known = 0 ]; then
+       sudo sed -i '/^\(}\)/ i location \/\.well-known {\n  alias \/opt\/letsencrypt\/\.well-known\/;\n  allow all;  \n  }' /etc/nginx/sites-available/default
+     fi
+  fi
+  
+  if [ ! -f "/etc/nginx/snippets/ssl.conf" ]; then
+  sudo echo "
+ssl_session_timeout 1d;
+ssl_session_cache shared:SSL:50m;
+ssl_session_tickets off;
+
+ssl_protocols TLSv1.2;
+ssl_ciphers EECDH+AESGCM:EECDH+AES;
+ssl_ecdh_curve secp384r1;
+ssl_prefer_server_ciphers on;
+
+ssl_stapling on;
+ssl_stapling_verify on;
+
+add_header Strict-Transport-Security \"max-age=15768000; includeSubdomains; preload\";
+add_header X-Content-Type-Options nosniff;
+" | sudo tee /etc/nginx/snippets/ssl.conf
+  fi
+
+  ### domain.txt
+  count=1
+  while read line || [[ -n "$line" ]] ;
+  do
+    count=`expr $count + 1`
+    if [ $count -gt 3 ]; then
+      IFS='|' read -ra arr <<<"$line"
+      port="$(echo -e "${arr[3]}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      if [[ $port =~ '^[0-9]+$' ]]; then
+        sudo ufw allow $port
+      fi
+    fi
+  done < $BASE_INSTALL/domain.txt
+
+  # Remove nginx if already installed
+  if [ "`which certbot`" != "" ]; then
+    # Uninstall Certbot
+    sudo apt-get purge python-certbot-nginx
+    sudo rm -rf /etc/letsencrypt
+  fi
+  echoblue "Installing Certbot. Fetching packages..."
+  echo  
+  sudo apt-get $APTVERBOSITY update
+  sudo apt-get $APTVERBOSITY install software-properties-common python-software-properties
+  sudo add-apt-repository universe
+  sudo add-apt-repository ppa:certbot/certbot
+  sudo apt-get $APTVERBOSITY update
+  sudo apt-get $APTVERBOSITY install python-certbot-nginx 
+
+  sudo certbot --nginx
+  # sudo certbot --nginx certonly
+  sudo certbot renew --dry-run
+
+  echo
+  echogreen "Finished installing Certbot"
+  echo
+else
+  echo "Skipping install of Certbot"
+fi

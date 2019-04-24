@@ -31,30 +31,30 @@ echo
 # if [ "$(which mysql)" = "" ]; then
 #   . $BASE_INSTALL/scripts/mariadb.sh
 # fi
-  
-# cd $BASE_WP
-cd $WEBSERVER_PATH
 
 if [ -d "/var/www/$MARKETING_USER" ]; then
   sudo rm -rf /var/www/$MARKETING_USER
 fi
 
 if [ ! -d "$WEBSERVER_PATH/$MARKETING_USER" ]; then
-  git clone https://vbosstech@github.com/vbosstech/MARKETING_.git --branch $MARKETING_RELEASE $WEBSERVER_PATH/$MARKETING_USER
+  cd $WEBSERVER_PATH
+  git clone https://vbosstech@github.com/vbosstech/mautic.git --branch $MARKETING_RELEASE $WEBSERVER_PATH/$MARKETING_USER
 else
   cd $WEBSERVER_PATH/$MARKETING_USER
   git pull
 fi
 
+cd $WEBSERVER_PATH/$MARKETING_USER
 # sudo chown -R www-data:www-data /var/www/$MARKETING_USER
 sudo find . -type d -exec chmod 755 {} \;
 sudo find . -type f -exec chmod 644 {} \;
 sudo chown -R $USER:www-data .
 # sudo php app/console cache:clear --env=prod
-cd $WEBSERVER_PATH/$MARKETING_USER
+
 # sudo rsync -avz README/$MARKETING_USER/ /var/www/$MARKETING_USER/
 # sudo -u www-data composer install
-sudo composer install
+# sudo composer install
+composer install
 
 read -e -p "Create Marketing user? [y/n] " -i "y" createmaketinguser
 if [ "$createmaketinguser" = "y" ]; then
@@ -104,7 +104,7 @@ if [ -n "$MARKETING_HOSTNAME" ]; then
   
   sudo mkdir temp
   sudo cp $NGINX_CONF/sites-available/$MARKETING_USER.snippet  temp/
-  sudo sed -e '/##Marketing##/ {' -e 'r temp/mautic.snippet' -e 'd' -e '}' -i /etc/nginx/sites-available/$MARKETING_HOSTNAME.conf
+  sudo sed -e '/##MARKETING##/ {' -e 'r temp/$MARKETING_USER.snippet' -e 'd' -e '}' -i /etc/nginx/sites-available/$MARKETING_HOSTNAME.conf
   sudo rm -rf temp
 
 fi

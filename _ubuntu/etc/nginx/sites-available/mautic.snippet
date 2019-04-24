@@ -1,0 +1,42 @@
+location ~ .php$ {
+   include snippets/fastcgi-php.conf;
+   fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+}
+ 
+location ~ \.css {
+  add_header  Content-Type    text/css;
+}
+location ~ \.js {
+  add_header  Content-Type    application/x-javascript;
+ }
+
+
+location ~* ^/index.php {
+  fastcgi_split_path_info ^(.+.php)(/.+)$;
+  fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
+  fastcgi_index index.php;
+  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  include fastcgi_params;
+  fastcgi_buffer_size 512k;
+  fastcgi_buffers 1024 64k;
+  fastcgi_busy_buffers_size 1024k;
+  fastcgi_temp_file_write_size 1024k;
+ }
+
+# No php is touched for static content
+location / {
+  # try_files $uri @rewrite;
+
+  # try to serve file directly, fallback to app.php
+  try_files $uri /index.php$is_args$args;
+}
+
+# Clean URLs
+location @rewrite {
+  rewrite ^ /index.php;
+}
+
+# Image styles
+location ~ ^/sites/.*/files/styles/ {
+  try_files $uri @rewrite;
+}
