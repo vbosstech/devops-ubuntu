@@ -1,7 +1,7 @@
 #!/bin/bash
-# -------
+# ------------------------------------------
 # This is script which defines constants
-# -------
+# ------------------------------------------
 
 export APTVERBOSITY="-qq -y"
 export DEFAULTYESNO="y"
@@ -15,7 +15,6 @@ export NGINX_CONF=$BASE_INSTALL/_ubuntu/etc/nginx
 export GLOBAL_PROTOCOL=https
 
 export COMPOSERURL=https://getcomposer.org/installer
-# export PHP_VERSION=7.0
 export PHP_VERSION=7.1
 
 # export NVMURL=https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh

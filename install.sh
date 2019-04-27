@@ -15,27 +15,35 @@ fi
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echogreen "Begin running...."
+echogreen "Begin running install.sh ...."
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo
 
-read -e -p "Please enter the public host name for your server (only domain name, not subdomain): " DOMAIN_NAME
-sudo sed -i "s/MYCOMPANY.COM/$DOMAIN_NAME/g" $BASE_INSTALL/domain.txt
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "OS upgrade, Utilities, Nginx, Certbot"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Would you like to run S1.os-upgrade.sh? ${ques} [y/n] " -i "$DEFAULTYESNO" osupgrade
+if [ "$osupgrade" = "y" ]; then
+     . $BASE_INSTALL/S1.os-upgrade.sh
+fi
 
-##################
-# Run initializing script for ubuntu
-##################
-. $BASE_INSTALL/S1.os-upgrade.sh
-
-##################
+######################################################
 # 1. LEMP Stack
-##################
+######################################################
 
 # Run script to install LEMP
-. $BASE_INSTALL/1.LEMP/S11.install-LEMP.sh
+# . $BASE_INSTALL/1.LEMP/S11.install-LEMP.sh
 
 # Run script to install Mautic - Digital Marketing Automation
-. $BASE_INSTALL/1.LEMP/S12.install-mautic.sh
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Install LEMP > Mautic: open-source Digital Marketing Automation"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Would you like to run S1.os-upgrade.sh? ${ques} [y/n] " -i "$DEFAULTYESNO" installmautic
+if [ "$installmautic" = "y" ]; then
+     . $BASE_INSTALL/1.LEMP/S12.install-mautic.sh
+fi
 
 # Run script to install Drupal
 #. $BASE_INSTALL/1.LEMP/S13.install-drupal.sh
@@ -44,17 +52,17 @@ sudo sed -i "s/MYCOMPANY.COM/$DOMAIN_NAME/g" $BASE_INSTALL/domain.txt
 #. $BASE_INSTALL/1.LEMP/S14.install-magento2.sh
 
 
-##################
+######################################################
 # 2. MEAN & Chatbot Environment
-##################
+######################################################
 
 # Run script to setup Nginx, NVM, PM2, Nodejs, Redis, MongoDB, CertbotSSL, SSL
-. $BASE_INSTALL/S21.install-MEAN.sh
+# . $BASE_INSTALL/S21.install-MEAN.sh
 
 
-##################
+######################################################
 # 3. JAVA & Tomcat: eWorkflow & eForms Environment
-##################
+######################################################
 
 # Run script to setup Maven, Ant, Java, Tomcat, Database, Jenkins
 # . $BASE_INSTALL/S2.install-TOMCAT.sh
@@ -75,12 +83,15 @@ sudo sed -i "s/MYCOMPANY.COM/$DOMAIN_NAME/g" $BASE_INSTALL/domain.txt
 ##. $BASE_INSTALL/S2.4.install-cashflow.sh
 
 
-##################
+######################################################
 # 4. CLEANUP
-##################
+######################################################
 
 
-##################
+######################################################
 # 5. Run script to install SSL: list of domain & port
-##################
-. $BASE_INSTALL/S2.ssl-domain-port.sh
+######################################################
+# . $BASE_INSTALL/S2.ssl-domain-port.sh
+
+# read -e -p "Please enter the public host name for your server (only domain name, not subdomain): " DOMAIN_NAME
+# sudo sed -i "s/MYCOMPANY.COM/$DOMAIN_NAME/g" $BASE_INSTALL/domain.txt

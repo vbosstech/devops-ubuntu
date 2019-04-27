@@ -1,6 +1,6 @@
 #!/bin/bash
-# Configure and install ocr services
-######
+# Installing & Configuring LEMP
+######################################################
 
 # Configure constants
 if [ -f "constants.sh" ]; then
@@ -18,19 +18,14 @@ fi
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echogreen "Begin running...."
+echogreen "Begin running S11.install-LEMP.sh ...."
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo
-
-# @FIXME using AWS RDS instead of
-if [ "$(which mysql)" = "" ]; then
-  . $BASE_INSTALL/scripts/mariadb.sh
-fi
   
 # Install PHP
 if [ "$(which php)" = "" ]; then
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-  echo "Installing PHP for system."
+  echo "Installing PHP ..."
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
   sudo add-apt-repository ppa:ondrej/nginx-mainline
   sudo apt-get update
@@ -69,7 +64,7 @@ fi
 
 # Add php config
 if [ -f "/etc/php/$PHP_VERSION/fpm/php.ini" ]; then
-  sudo sed -i "s/\(^memory_limit =\).*/\1 1024M/"             /etc/php/$PHP_VERSION/fpm/php.ini
+  sudo sed -i "s/\(^memory_limit =\).*/\1 512M/"             /etc/php/$PHP_VERSION/fpm/php.ini
   sudo sed -i "s/\(^max_execution_time =\).*/\1 1200/"        /etc/php/$PHP_VERSION/fpm/php.ini
   sudo sed -i "s/\(^zlib.output_compression =\).*/\1 On/"     /etc/php/$PHP_VERSION/fpm/php.ini
   sudo sed -i "s/\(^zmax_input_time =\).*/\1 300/"            /etc/php/$PHP_VERSION/fpm/php.ini
@@ -81,4 +76,23 @@ if [ -f "/etc/php/$PHP_VERSION/fpm/php.ini" ]; then
   sudo systemctl restart php$PHP_VERSION-fpm
 else
   echo "There is no file php.ini, please check if php is installed correctly."
+fi
+
+
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Install MySQL Database. Please ignore in case of using AWS-RDS MySQL"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Would you like to install MySQL? ${ques} [y/n] " -i "$DEFAULTYESNO" installmysql
+if [ "$installmysql" = "y" ]; then
+     . $BASE_INSTALL/scripts/mysql.sh
+fi
+
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Install MariaDB Database."
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Would you like to install MariaDB? ${ques} [y/n] " -i "$DEFAULTYESNO" installmariadb
+if [ "$installmariadb" = "y" ]; then
+     . $BASE_INSTALL/scripts/mariadb.sh
 fi

@@ -307,6 +307,19 @@ else
 fi
 
 ##############################
+## Automatically Renew Certbot
+##############################
+if [ ! -f "/etc/cron.daily/renewcerts" ]; then
+sudo echo "
+#!/bin/bash
+certbot renew
+service nginx reload
+" | sudo tee /etc/cron.daily/renewcerts
+fi
+
+sudo chmod a+x /etc/cron.daily/renewcerts
+
+##############################
 ## Verify the installation
 ##############################
 
@@ -331,12 +344,4 @@ sudo nginx -t
 # sudo certbot renew
 sudo certbot renew --dry-run
 
-if [ ! -f "/etc/cron.daily/renewcerts" ]; then
-sudo echo "
-#!/bin/bash
-certbot renew
-service nginx reload
-" | sudo tee /etc/cron.daily/renewcerts
-fi
-
-sudo chmod a+x /etc/cron.daily/renewcerts
+run-parts --test -v /etc/cron.daily
