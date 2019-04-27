@@ -148,19 +148,24 @@ if [ "$installnginx" = "y" ]; then
   sudo systemctl enable nginx
   ## Reload config file
   sudo systemctl restart nginx
-  
-  sudo ufw enable
-  sudo ufw allow 'Nginx HTTP'
-  sudo ufw allow 'Nginx HTTPS'
-  sudo ufw allow 'OpenSSH'
 
   echo
   echogreen "Finished installing nginx"
+  sudo nginx -t 
   echo
 else
   echo "Skipping install of nginx"
 fi
 
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Installing ufw"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+sudo ufw enable
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 22
+sudo ufw status numbered
+sudo service nginx status   
 
 #############################
 # Docker & Docker-Compose
@@ -177,6 +182,26 @@ if [ "`which docker`" = "" ]; then
   sudo usermod -aG docker $USER
 fi
 
+#############################
+# NVM
+#############################
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Begin setting up a nvm..."
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Install nvm${ques} [y/n] " -i "$DEFAULTYESNO" installnvm
+if [ "$installnvm" = "y" ]; then
+  sudo curl -# -o $TMP_INSTALL/install.sh $NVMURL
+  sudo sh $TMP_INSTALL/install.sh
+  echo 'export NVM_DIR="$HOME/.nvm"' | sudo tee --append ~/.bashrc
+  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' | sudo sudo tee --append $HOME/.bashrc
+  sudo chown $USER:$USER -R $HOME/.nvm
+  source $HOME/.bashrc
+  echo
+  echogreen "Finished installing NVM"
+fi
+
 ## Yarn
 echogreen "Installing Yarn"
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
@@ -189,7 +214,7 @@ if [ "`which python`" = "" ]; then
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
   echo "You need to install python."
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-  sudo apt-get $APTVERBOSITY install python;
+  sudo apt-get $APTVERBOSITY install python
 fi
 
 ## Pip ###
@@ -198,7 +223,7 @@ if [ "`which pip`" = "" ]; then
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
   echo "You need to install python pip."
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-  sudo apt-get $APTVERBOSITY install python-pip;
+  sudo apt-get $APTVERBOSITY install python-pip
   sudo pip install --upgrade pip
   # sudo pip install awscli --upgrade --user
 fi
@@ -207,7 +232,7 @@ if [ "`which aws`" = "" ]; then
 	echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 	echo "You need to install awscli."
 	echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-	sudo apt-get $APTVERBOSITY install awscli;
+	sudo apt-get $APTVERBOSITY install awscli
 fi
 
 
@@ -331,10 +356,6 @@ lsb_release -a
 timedatectl                  
 free -h                      
 # sudo swapon --show
-
-sudo nginx -t
-sudo service nginx status         
-sudo ufw status numbered    
 
 # pip --version
 # python --version     

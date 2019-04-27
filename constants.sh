@@ -17,9 +17,9 @@ export GLOBAL_PROTOCOL=https
 export COMPOSERURL=https://getcomposer.org/installer
 export PHP_VERSION=7.1
 
-# export NVMURL=https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh
-# export NODEJSURL=https://deb.nodesource.com/setup_8.x
-# export NODEJS_LAMBDA=8.10.0
+export NVMURL=https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh
+export NODEJSURL=https://deb.nodesource.com/setup_8.x
+export NODEJS_LAMBDA=8.10.0
 
 # export CAMUNDA_VERSION=7.8
 # export TOMCAT8_VERSION=8.5.33

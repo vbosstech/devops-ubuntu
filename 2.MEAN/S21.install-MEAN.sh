@@ -47,26 +47,6 @@ if [ ! -d "$TMP_INSTALL" ]; then
 fi
 
 
-######
-# NVM
-######
-echo
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Begin setting up a nvm..."
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-read -e -p "Install nvm${ques} [y/n] " -i "$DEFAULTYESNO" installnvm
-if [ "$installnvm" = "y" ]; then
-  sudo curl -# -o $TMP_INSTALL/install.sh $NVMURL
-  sudo sh $TMP_INSTALL/install.sh
-  echo 'export NVM_DIR="$HOME/.nvm"' | sudo tee --append ~/.bashrc
-  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' | sudo sudo tee --append $HOME/.bashrc
-  sudo chown $USER:$USER -R $HOME/.nvm
-  source $HOME/.bashrc
-  echo
-  echogreen "Finished installing NVM"
-fi
-
 ##
 # Node JS
 ##
