@@ -27,7 +27,8 @@ if [ "$(which php)" = "" ]; then
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
   echo "Installing PHP ..."
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-  sudo add-apt-repository ppa:ondrej/nginx-mainline
+  # sudo add-apt-repository ppa:ondrej/nginx-mainline
+  sudo add-apt-repository ppa:ondrej/php
   sudo apt-get update
 
   sudo apt-get $APTVERBOSITY install php$PHP_VERSION php$PHP_VERSION-cli php$PHP_VERSION-common php$PHP_VERSION-json php$PHP_VERSION-opcache \
@@ -79,14 +80,14 @@ else
 fi
 
 
-echo
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Install MySQL Database. Please ignore in case of using AWS-RDS MySQL"
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-read -e -p "Would you like to install MySQL? ${ques} [y/n] " -i "$DEFAULTYESNO" installmysql
-if [ "$installmysql" = "y" ]; then
-     . $BASE_INSTALL/scripts/mysql.sh
-fi
+# echo
+# echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+# echo "Install MySQL Database. Please ignore in case of using AWS-RDS MySQL"
+# echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+# read -e -p "Would you like to install MySQL? ${ques} [y/n] " -i "$DEFAULTYESNO" installmysql
+# if [ "$installmysql" = "y" ]; then
+#      . $BASE_INSTALL/scripts/mysql.sh
+# fi
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"

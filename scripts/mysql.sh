@@ -22,13 +22,13 @@ if [ "$installmysqldb" = "y" ]; then
   sudo apt-get install mysql-server
 fi
 
-read -e -p "Create Alfresco Database and user? [y/n] " -i "y" createdbalfresco
-if [ "$createdbalfresco" = "y" ]; then
-  read -s -p "Enter the Alfresco database password:" DB_PASSWORD
+read -e -p "Create Database and User? [y/n] " -i "y" createdb
+if [ "$createdb" = "y" ]; then
+  read -s -p "Enter the Database Password:" DB_PASSWORD
   echo ""
-  read -s -p "Re-Enter the Alfresco database password:" DB_PASSWORD2
+  read -s -p "Re-Enter the Database Password:" DB_PASSWORD2
   if [ "$DB_PASSWORD" == "$DB_PASSWORD2" ]; then
-    echo "Creating Alfresco database and user."
+    echo "Creating Database and User."
     echo "You must supply the root user password for mysql:"
     mysql -u root -p << EOF
 create database $DB_NAME default character set utf8 collate utf8_bin;

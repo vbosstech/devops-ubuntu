@@ -15,13 +15,13 @@ fi
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echogreen "Begin running install.sh ...."
+echogreen "Begin running...."
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "OS upgrade, Utilities, Nginx, Certbot"
+echo "[install.sh] OS upgrade, Utilities, Nginx, Certbot"
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 read -e -p "Would you like to run S1.os-upgrade.sh? ${ques} [y/n] " -i "$DEFAULTYESNO" osupgrade
 if [ "$osupgrade" = "y" ]; then
@@ -33,12 +33,18 @@ fi
 ######################################################
 
 # Run script to install LEMP
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "[Install LEMP] PHP & MySQL/MariaDB"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Would you like to run S11.install-LEMP? ${ques} [y/n] " -i "$DEFAULTYESNO" installlemp
+if [ "$installlemp" = "y" ]; then
 # . $BASE_INSTALL/1.LEMP/S11.install-LEMP.sh
 
 # Run script to install Mautic - Digital Marketing Automation
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Install LEMP > Mautic: open-source Digital Marketing Automation"
+echo "[Install LEMP] Mautic: open-source Digital Marketing Automation"
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 read -e -p "Would you like to run S1.os-upgrade.sh? ${ques} [y/n] " -i "$DEFAULTYESNO" installmautic
 if [ "$installmautic" = "y" ]; then

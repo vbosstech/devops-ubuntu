@@ -24,9 +24,9 @@ echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 sudo apt-get $APTVERBOSITY update && sudo apt-get $APTVERBOSITY upgrade;
 echo
 
-##
+######################################################
 # Swap File
-##
+######################################################
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Starting to create Swap space..."
@@ -69,9 +69,9 @@ sudo update-locale LC_ALL=$LOCALESUPPORT
 # sudo echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 # sudo echo "LANG=en_US.UTF-8" >> /etc/environment
 
-##
+######################################################
 # Timezone
-##
+######################################################
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Begin setting up TimeZone..."
@@ -123,9 +123,9 @@ if [ "`which git`" = "" ]; then
 fi
 
 
-##
+######################################################
 # Nginx
-##
+######################################################
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Nginx can be used as reverse proxy."
@@ -177,28 +177,31 @@ if [ "`which docker`" = "" ]; then
   sudo usermod -aG docker $USER
 fi
 
-### Yarn
-# curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-# echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-# sudo apt-get update && sudo apt-get install yarn
+## Yarn
+echogreen "Installing Yarn"
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update && sudo apt-get install yarn
 
-### Python ###
-# if [ "`which python`" = "" ]; then
-#   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-#   echo "You need to install python."
-#   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-#   sudo apt-get $APTVERBOSITY install python;
-# fi
+## Python ###
+echogreen "Installing Python"
+if [ "`which python`" = "" ]; then
+  echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+  echo "You need to install python."
+  echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+  sudo apt-get $APTVERBOSITY install python;
+fi
 
-### Pip ###
-# if [ "`which pip`" = "" ]; then
-#   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-#   echo "You need to install python pip."
-#   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-#   sudo apt-get $APTVERBOSITY install python-pip;
-#   sudo pip install --upgrade pip
-#   # sudo pip install awscli --upgrade --user
-# fi
+## Pip ###
+echogreen "Installing Pip"
+if [ "`which pip`" = "" ]; then
+  echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+  echo "You need to install python pip."
+  echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+  sudo apt-get $APTVERBOSITY install python-pip;
+  sudo pip install --upgrade pip
+  # sudo pip install awscli --upgrade --user
+fi
 
 if [ "`which aws`" = "" ]; then
 	echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -300,34 +303,36 @@ add_header X-Content-Type-Options nosniff;
   sudo certbot renew --dry-run
 
   echo
-  echogreen "Finished installing Certbot"
+    echogreen "Finished installing Certbot"
   echo
+
+  ## Automatically Renew Certbot
+  if [ ! -f "/etc/cron.daily/renewcerts" ]; then
+  sudo echo "
+  #!/bin/bash
+  certbot renew
+  service nginx reload
+  " | sudo tee /etc/cron.daily/renewcerts
+  fi
+  sudo chmod a+x /etc/cron.daily/renewcerts
+  echogreen "Finished Automatically Renew Certbot"
+
 else
   echo "Skipping install of Certbot"
 fi
 
-##############################
-## Automatically Renew Certbot
-##############################
-if [ ! -f "/etc/cron.daily/renewcerts" ]; then
-sudo echo "
-#!/bin/bash
-certbot renew
-service nginx reload
-" | sudo tee /etc/cron.daily/renewcerts
-fi
-
-sudo chmod a+x /etc/cron.daily/renewcerts
 
 ##############################
 ## Verify the installation
 ##############################
+echogreen "Verify the Installation"
 
 lsb_release -a               
 timedatectl                  
 free -h                      
 # sudo swapon --show
 
+sudo nginx -t
 sudo service nginx status         
 sudo ufw status numbered    
 
@@ -339,9 +344,6 @@ sudo ufw status numbered
 sudo docker volume ls
 # sudo docker volume prune
 
-sudo nginx -t
-
 # sudo certbot renew
 sudo certbot renew --dry-run
-
 run-parts --test -v /etc/cron.daily
