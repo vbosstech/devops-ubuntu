@@ -13,6 +13,11 @@ if [ -f "colors.sh" ]; then
 	. colors.sh
 fi
 
+# Create temporary folder for storing downloaded files
+if [ ! -d "$TMP_INSTALL" ]; then
+  mkdir -p $TMP_INSTALL
+fi
+
 # size of swapfile in megabytes = 2X
 # default is 2*1G 
 swapsize=2G
@@ -180,6 +185,7 @@ if [ "`which docker`" = "" ]; then
   sudo chmod u+x /usr/local/bin/docker-compose
   sudo groupadd docker
   sudo usermod -aG docker $USER
+  sudo service docker restart
 fi
 
 #############################
@@ -342,6 +348,9 @@ add_header X-Content-Type-Options nosniff;
   sudo chmod a+x /etc/cron.daily/renewcerts
   echogreen "Finished Automatically Renew Certbot"
 
+  # sudo certbot renew
+  sudo certbot renew --dry-run
+  run-parts --test -v /etc/cron.daily
 else
   echo "Skipping install of Certbot"
 fi
@@ -364,7 +373,3 @@ free -h
 
 sudo docker volume ls
 # sudo docker volume prune
-
-# sudo certbot renew
-sudo certbot renew --dry-run
-run-parts --test -v /etc/cron.daily
